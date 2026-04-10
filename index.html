@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexAI – Legal Advisory Assistant</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --navy-light: #1A2E44;
+            --gold: #C9A84C;
+            --gold-hover: #E3C36A;
+            --offwhite: #F5F0E8;
+            --slate: #4A5568;
+            --slate-light: #A0AEC0;
+            --error: #E53E3E;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--navy);
+            color: var(--offwhite);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        /* Disclaimer Banner */
+        .disclaimer-banner {
+            background-color: var(--gold);
+            color: var(--navy);
+            text-align: center;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: var(--slate-light);
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Main Layout */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2.5rem;
+            width: 100%;
+        }
+
+        /* Panels */
+        .panel {
+            background-color: var(--navy-light);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(201, 168, 76, 0.15);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .panel-title {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--offwhite);
+            font-size: 0.95rem;
+        }
+
+        select, textarea {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--offwhite);
+            border-radius: 6px;
+            padding: 0.875rem 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.2);
+        }
+
+        select option {
+            background-color: var(--navy-light);
+            color: var(--offwhite);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 180px;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--slate-light);
+            margin-top: 0.4rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gold);
+            color: var(--navy);
+            border: none;
+            border-radius: 6px;
+            padding: 1rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background-color: var(--gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 168, 76, 0.2);
+        }
+
+        .btn:disabled {
+            background-color: var(--slate);
+            color: var(--slate-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(201, 168, 76, 0.1);
+            color: var(--gold-hover);
+        }
+
+        /* Sidebar - Example Questions */
+        .example-list {
+            list-style: none;
+        }
+
+        .example-item {
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            color: var(--slate-light);
+            line-height: 1.5;
+        }
+
+        .example-item:hover {
+            border-color: var(--gold);
+            color: var(--offwhite);
+            background-color: rgba(201, 168, 76, 0.05);
+            transform: translateX(4px);
+        }
+
+        /* AI Response Section */
+        #response-container {
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .response-content {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--offwhite);
+            border-left: 4px solid var(--gold);
+        }
+
+        .response-content h3 {
+            color: var(--gold);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .response-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .response-content p {
+            margin-bottom: 1rem;
+        }
+
+        .response-content ul {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .response-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .response-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--navy);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        /* Error Message */
+        .error-message {
+            display: none;
+            background-color: rgba(229, 62, 62, 0.1);
+            color: #FC8181;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid var(--error);
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #08121d;
+            padding: 2rem 1rem;
+            text-align: center;
+            color: var(--slate);
+            font-size: 0.85rem;
+            margin-top: auto;
+        }
+
+        footer p {
+            max-width: 800px;
+            margin: 0 auto 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+            .panel {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="disclaimer-banner">
+        ATTENTION: This app provides general legal information, not formal legal advice. Consult a licensed attorney for your specific situation.
+    </div>
+
+    <header>
+        <h1>LexAI</h1>
+        <p>Legal Advisory Assistant</p>
+    </header>
+
+    <main>
+        <!-- Left Column: Input & Results -->
+        <div class="left-col">
+            <!-- Query Panel -->
+            <div id="query-panel" class="panel">
+                <h2 class="panel-title">Describe Your Situation</h2>
+                <form id="legal-form">
+                    <div class="form-group">
+                        <label for="category">Legal Category</label>
+                        <select id="category" required>
+                            <option value="" disabled selected>Select a category...</option>
+                            <option value="Contract Law">Contract Law</option>
+                            <option value="Family Law">Family Law</option>
+                            <option value="Criminal Law">Criminal Law</option>
+                            <option value="Employment Law">Employment Law</option>
+                            <option value="Property Law">Property Law</option>
+                            <option value="Intellectual Property">Intellectual Property</option>
+                            <option value="Consumer Rights">Consumer Rights</option>
+                            <option value="Immigration">Immigration</option>
+                            <option value="General Legal">General Legal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question">Your Legal Question</label>
+                        <textarea id="question" placeholder="Describe your legal situation or question in detail..." maxlength="1000" required></textarea>
+                        <div class="char-counter"><span id="char-count">0</span> / 1000</div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn">
+                        <div class="spinner" id="spinner"></div>
+                        <span id="btn-text">Get Legal Guidance</span>
+                    </button>
+
+                    <div id="error-msg" class="error-message"></div>
+                </form>
+            </div>
+
+            <!-- Response Panel (Hidden initially) -->
+            <div id="response-container" class="panel">
+                <h2 class="panel-title">Your Legal Guidance</h2>
+                <div id="response-content" class="response-content">
+                    <!-- Dynamic content inserted here -->
+                </div>
+                
+                <div class="response-actions">
+                    <button type="button" id="copy-btn" class="btn btn-outline" style="flex: 1;">
+                        Copy to Clipboard
+                    </button>
+                    <button type="button" id="reset-btn" class="btn" style="flex: 1;">
+                        Ask Another Question
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Sidebar -->
+        <div class="panel" id="sidebar">
+            <h2 class="panel-title" style="font-size: 1.25rem;">Example Questions</h2>
+            <ul class="example-list">
+                <li class="example-item" data-category="Property Law">
+                    "My landlord won't return my security deposit. What are my options?"
+                </li>
+                <li class="example-item" data-category="Employment Law">
+                    "I was wrongfully terminated from my job. What should I do?"
+                </li>
+                <li class="example-item" data-category="General Legal">
+                    "How do I file a small claims court case?"
+                </li>
+                <li class="example-item" data-category="Contract Law">
+                    "What constitutes a legally binding contract?"
+                </li>
+                <li class="example-item" data-category="Employment Law">
+                    "My employer isn't paying overtime. Is this legal?"
+                </li>
+                <li class="example-item" data-category="Criminal Law">
+                    "What are my rights if I'm arrested?"
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>LexAI uses advanced AI models to provide generalized legal frameworks for informational purposes only.</p>
+        <p>&copy; 2026 LexAI Technologies. Not a substitute for professional legal advising. Client-attorney privilege does not apply to this service.</p>
+    </footer>
+
+    <script>
+        // Configuration
+        // Insert your Google Gemini API key here
+        const API_KEY = "AIzaSyA0VTg1u23MjMxNYve1O2IrTx4ow8KPsjE"; 
+
+        // DOM Elements
+        const form = document.getElementById('legal-form');
+        const categorySelect = document.getElementById('category');
+        const questionInput = document.getElementById('question');
+        const charCount = document.getElementById('char-count');
+        const submitBtn = document.getElementById('submit-btn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btn-text');
+        const errorMsg = document.getElementById('error-msg');
+        const queryPanel = document.getElementById('query-panel');
+        const responseContainer = document.getElementById('response-container');
+        const responseContent = document.getElementById('response-content');
+        const copyBtn = document.getElementById('copy-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const exampleItems = document.querySelectorAll('.example-item');
+
+        // Character counter
+        questionInput.addEventListener('input', () => {
+            const len = questionInput.value.length;
+            charCount.textContent = len;
+            if (len >= 1000) {
+                charCount.style.color = 'var(--error)';
+            } else {
+                charCount.style.color = 'var(--slate-light)';
+            }
+        });
+
+        // Example Questions Sidebar click handlers
+        exampleItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const text = item.textContent.trim().replace(/^"|"$/g, '');
+                const category = item.getAttribute('data-category');
+                
+                questionInput.value = text;
+                categorySelect.value = category;
+                
+                // Trigger char count update
+                const event = new Event('input');
+                questionInput.dispatchEvent(event);
+                
+                // Scroll to form on mobile
+                if(window.innerWidth <= 900) {
+                    queryPanel.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Basic Markdown-ish Parser for the structured response
+        function parseResponse(text) {
+            // Convert numerical lists and hyphen bullets
+            let html = text
+                // Bold text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                // Headings based on prompt requirements
+                .replace(/(?:^|\n)(1\)|2\)|3\)|4\)|1\.|2\.|3\.|4\.|Summary|Key Legal Points|Recommended Next Steps|Reminder|Disclaimer)(.*?)(?:\n|$)/gi, (match, heading, rest) => {
+                    // Clean up colon
+                    let cleanHeading = heading.replace(/[.)]/, '').trim();
+                    if(cleanHeading.length <= 2) {
+                        cleanHeading = rest.split(':')[0].trim() || rest.trim();
+                        rest = rest.substring(cleanHeading.length).replace(/^:/, '');
+                    } else if (rest.startsWith(':')) {
+                        rest = rest.substring(1);
+                    }
+                    if(!cleanHeading) cleanHeading = "Section";
+                    
+                    return `\n<h3>${cleanHeading}</h3>\n<p>${rest.trim()}</p>\n`;
+                });
+
+            // Convert bullet points
+            const lines = html.split('\n');
+            let inList = false;
+            let result = '';
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line.match(/^[-*]\s+/)) {
+                    if (!inList) {
+                        result += '<ul>\n';
+                        inList = true;
+                    }
+                    result += `<li>${line.replace(/^[-*]\s+/, '')}</li>\n`;
+                } else if (line.match(/^\d+\.\s+/) && !line.includes('</h3>')) {
+                    // Numbered lists inside the body
+                    if (!inList) {
+                        result += '<ul>\n';
+                        inList = true;
+                    }
+                    result += `<li>${line.replace(/^\d+\.\s+/, '')}</li>\n`;
+                } else {
+                    if (inList) {
+                        result += '</ul>\n';
+                        inList = false;
+                    }
+                    if (line && !line.startsWith('<h') && !line.startsWith('<p>')) {
+                        result += `<p>${line}</p>\n`;
+                    } else if (line) {
+                        result += line + '\n';
+                    }
+                }
+            }
+            if (inList) result += '</ul>\n';
+
+            // Clean up empty tags and fix nesting
+            return result.replace(/<p><\/p>/g, '').replace(/<p><h3>/g, '<h3>').replace(/<\/h3><\/p>/g, '</h3>');
+        }
+
+        // Form Submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const category = categorySelect.value;
+            const question = questionInput.value.trim();
+            
+            if (!category || !question) return;
+
+            errorMsg.style.display = 'none';
+
+            if (!API_KEY) {
+                errorMsg.textContent = "Configuration Error: Please insert your Google Gemini API Key in the application source code (API_KEY variable).";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            // Set loading state
+            submitBtn.disabled = true;
+            spinner.style.display = 'block';
+            btnText.textContent = 'Analyzing...';
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        systemInstruction: {
+                            parts: [{ text: "You are LexAI, a knowledgeable legal information assistant. You provide clear, simplified legal guidance based on general legal principles. Always structure your response with: 1) A brief Summary of the situation, 2) Key Legal Points as bullet points, 3) Recommended Next Steps, and 4) A reminder to consult a licensed attorney. Use plain language that non-lawyers can understand. Never claim to provide formal legal advice." }]
+                        },
+                        contents: [{
+                            parts: [{ text: `Legal Category: ${category}\n\nUser's Question: ${question}` }]
+                        }],
+                        generationConfig: {
+                            maxOutputTokens: 1000
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error?.message || `API request failed with status ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response generated.";
+                
+                // Hide query panel, show response
+                queryPanel.style.display = 'none';
+                responseContainer.style.display = 'block';
+                
+                // Parse formatting
+                responseContent.innerHTML = parseResponse(aiText);
+                
+                // Save raw text for copying
+                responseContent.setAttribute('data-raw', aiText);
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                console.error("API Error:", err);
+                errorMsg.textContent = "Error: " + err.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                // Reset loading state
+                submitBtn.disabled = false;
+                spinner.style.display = 'none';
+                btnText.textContent = 'Get Legal Guidance';
+            }
+        });
+
+        // Copy button
+        copyBtn.addEventListener('click', () => {
+            const rawText = responseContent.getAttribute('data-raw');
+            if (rawText) {
+                navigator.clipboard.writeText(rawText).then(() => {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            }
+        });
+
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            responseContainer.style.display = 'none';
+            queryPanel.style.display = 'block';
+            form.reset();
+            const event = new Event('input');
+            questionInput.dispatchEvent(event);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+    </script>
+</body>
+</html>
